@@ -1,46 +1,43 @@
 package julianh06.wynnextras.core;
 
 import com.wynntils.utils.mc.McUtils;
-import julianh06.wynnextras.config.WynnExtrasConfig;
 import julianh06.wynnextras.annotations.WEModule;
+import julianh06.wynnextras.config.WynnExtrasConfig;
 import julianh06.wynnextras.config.simpleconfig.SimpleConfig;
 import julianh06.wynnextras.core.command.Command;
-import julianh06.wynnextras.core.loader.CommandLoader;
+import julianh06.wynnextras.core.loader.WELoader;
 import julianh06.wynnextras.event.CharInputEvent;
 import julianh06.wynnextras.event.KeyInputEvent;
 import julianh06.wynnextras.event.TickEvent;
-import julianh06.wynnextras.core.loader.WELoader;
 import julianh06.wynnextras.event.WorldChangeEvent;
+import julianh06.wynnextras.features.ability.AbilityCooldownOverlay;
 import julianh06.wynnextras.features.abilitytree.TreeLoader;
 import julianh06.wynnextras.features.aspects.maintracking;
 import julianh06.wynnextras.features.chat.RaidChatNotifier;
 import julianh06.wynnextras.features.guildviewer.GV;
+import julianh06.wynnextras.features.inventory.BankOverlay;
 import julianh06.wynnextras.features.inventory.BankOverlayType;
 import julianh06.wynnextras.features.inventory.data.AccountBankData;
-import julianh06.wynnextras.features.inventory.BankOverlay;
 import julianh06.wynnextras.features.inventory.data.BookshelfData;
 import julianh06.wynnextras.features.inventory.data.CharacterBankData;
 import julianh06.wynnextras.features.inventory.data.MiscBucketData;
-import julianh06.wynnextras.features.misc.CustomClassSelection;
 import julianh06.wynnextras.features.misc.FastRequeue;
-import julianh06.wynnextras.features.misc.ProvokeTimer;
 import julianh06.wynnextras.features.misc.PlayerHider;
+import julianh06.wynnextras.features.misc.ProvokeTimer;
 import julianh06.wynnextras.features.profileviewer.PV;
 import julianh06.wynnextras.features.profileviewer.WynncraftApiHandler;
 import julianh06.wynnextras.features.raid.RaidListData;
 import julianh06.wynnextras.features.waypoints.WaypointData;
 import julianh06.wynnextras.features.waypoints.Waypoints;
 import julianh06.wynnextras.mixin.Accessor.KeybindingAccessor;
-import julianh06.wynnextras.mixin.InventoryScreenMixin;
 import julianh06.wynnextras.utils.MinecraftUtils;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
@@ -58,8 +55,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 
 // TODO: Use WELogger instead of normal logger
@@ -142,13 +137,14 @@ public class WynnExtras implements ClientModInitializer {
 		CurrentVersionData.INSTANCE.version = FabricLoader.getInstance().getModContainer("wynnextras").map(mod -> mod.getMetadata().getVersion().getFriendlyString()).orElse("unknown");
 		CurrentVersionData.save();
 		latestVersion = CurrentVersionData.fetchLatestVersion();
-
 		WELoader.loadAll();
 
 		julianh06.wynnextras.event.ClickEvent.register();
 
 		PlayerHider.registerBossPlayerHider();
 		BankOverlay.registerBankOverlay();
+		AbilityCooldownOverlay.register();
+		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.MISC_OVERLAYS, AbilityCooldownOverlay.ABILITYCOOLDOWN_LAYER, AbilityCooldownOverlay::render));
 		PV.register();
 		GV.register();
 		ProvokeTimer.init();
@@ -156,7 +152,6 @@ public class WynnExtras implements ClientModInitializer {
 		FastRequeue.registerFastRequeue();
 		TreeLoader.init();
 		maintracking.init();
-
 		RaidListData.load();
 		WaypointData.load();
 		RaidChatNotifier.INSTANCE.load();
