@@ -144,7 +144,7 @@ public class WynnExtras implements ClientModInitializer {
 		PlayerHider.registerBossPlayerHider();
 		BankOverlay.registerBankOverlay();
 		AbilityCooldownOverlay.register();
-		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.MISC_OVERLAYS, AbilityCooldownOverlay.ABILITYCOOLDOWN_LAYER, AbilityCooldownOverlay::render));
+		//HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.MISC_OVERLAYS, AbilityCooldownOverlay.ABILITYCOOLDOWN_LAYER, AbilityCooldownOverlay::render));
 		PV.register();
 		GV.register();
 		ProvokeTimer.init();
