@@ -45,7 +45,7 @@ public class AbilityCooldownOverlay  implements WEHudElement {
     @SubscribeEvent
     public void onTick(TickEvent event) {
         //This entire code could be a bit more optimized if done with StatusEffectChangedEvent from Wynntils.
-        //But when ability is on cooldown we update the icon every 1s anyway and the code that gets executed is not that heavy, that it would probaly make an impact if you are not playing on very old Hardware.
+        //But when ability is on cooldown we update the icon every 1s anyway and the code that gets executed is not that heavy, that it would probaly make an impact if you are not playing on early 2000s Hardware.
 
         if(event.ticks % 20 == 0){
             recalculateRenderCache();
@@ -57,13 +57,12 @@ public class AbilityCooldownOverlay  implements WEHudElement {
 
     private void recalculateRenderCache() {
         List<StatusEffect> effects = Models.StatusEffect.getStatusEffects();
-        //renderCache.clear();
 
         //Using this isActive for better display if it should lag
         renderCache.forEach(abilityCooldown -> abilityCooldown.setActive(false));
         if (effects.isEmpty()){
             //Sometimes happens that the renderCache doesnt get cleared after the effects are over.
-            if (!renderCache.isEmpty()) renderCache.clear();
+            renderCache.clear();
             return;
         }
 
