@@ -3,11 +3,10 @@ package julianh06.wynnextras.features.ability;
 import com.wynntils.core.components.Models;
 import com.wynntils.models.statuseffects.type.StatusEffect;
 import com.wynntils.utils.colors.CustomColor;
-import com.wynntils.utils.wynn.ColorScaleUtils;
 import julianh06.wynnextras.core.WynnExtras;
-import julianh06.wynnextras.core.loader.WEHudElement;
 import julianh06.wynnextras.event.TickEvent;
 import julianh06.wynnextras.utils.HUD.HUDUtils;
+import julianh06.wynnextras.utils.HUD.WEHud;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.MinecraftClient;
@@ -21,14 +20,13 @@ import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-
-public class AbilityCooldownOverlay  implements WEHudElement {
+public class AbilityCooldownHud extends WEHud {
+    //public static final AbilityCooldownHud INSTANCE = new AbilityCooldownHud();
     public static final Identifier ABILITYCOOLDOWN_LAYER = Identifier.of("wynnextras", "ability-cooldown-layer");
     public static final Identifier IDENTIFIED_LAYER = IdentifiedLayer.MISC_OVERLAYS;
     private static final Identifier COOLDOWN_IDENTIFIER = Identifier.of("wynnextras",  "textures/general/hud/abilities/cooldown.png");
@@ -37,16 +35,21 @@ public class AbilityCooldownOverlay  implements WEHudElement {
     private int currentTick = 0;
 
     private static Identifier tempIdentifier = Identifier.of("wynnextras", "textures/general/hud/abilities/holytrumpets.png");
-    private static HUDUtils hudUtils;
 
     public static void register(){
-        WynnExtras.LOGGER.info("Ability CooldownOverlay registerd");
-        hudUtils = new HUDUtils();
+        WynnExtras.LOGGER.info("Ability CooldownHUD registerd");
+        //hudUtils = new HUDUtils();
 
         ClientTickEvents.START_CLIENT_TICK.register((tick) -> {
 
         });
     }
+
+
+    public AbilityCooldownHud() {
+        super(IdentifiedLayer.MISC_OVERLAYS, Identifier.of("wynnextras", "ability-cooldown-hud"));
+    }
+
     @SubscribeEvent
     public void onTick(TickEvent event) {
         //This entire code could be a bit more optimized if done with StatusEffectChangedEvent from Wynntils.
@@ -56,9 +59,6 @@ public class AbilityCooldownOverlay  implements WEHudElement {
             recalculateRenderCache();
         }
     }
-
-
-
 
     private void recalculateRenderCache() {
 
@@ -110,20 +110,11 @@ public class AbilityCooldownOverlay  implements WEHudElement {
         return nameToPerson.get(name);
     }
 
-    public Identifier getLayerIdentifier() {
-        return ABILITYCOOLDOWN_LAYER;
-    }
-
-    public Identifier getIdentifiedLayer() {
-        return IdentifiedLayer.MISC_OVERLAYS;
-    }
-
+    @Override
     public void render(DrawContext context, RenderTickCounter tickCounter) {
-        boolean test = true;
-        if(test) return;
-        //hudUtils.computeScaleAndOffsets();
-        int startX = hudUtils.getLogicalWidth() / 2 - 735;
-        int startY = hudUtils.getLogicalHeight() / 2 -  250;
+        super.render(context, tickCounter);
+        int startX = getLogicalWidth() / 2 - 735;
+        int startY = getLogicalHeight() / 2 -  250;
 
 
 
@@ -149,9 +140,6 @@ public class AbilityCooldownOverlay  implements WEHudElement {
         }
 
     }
-
-    //Returns the Identifier of a Statuseffect
-    //§7Heavenly Trumpet
     public static Identifier getAbilitiyCooldownIdentifier(StatusEffect effect){
         Pattern p = Pattern.compile("§7", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(effect.getName().getString());
@@ -222,7 +210,4 @@ public class AbilityCooldownOverlay  implements WEHudElement {
         }
 
     }
-
 }
-
-

@@ -10,6 +10,7 @@ import julianh06.wynnextras.event.CharInputEvent;
 import julianh06.wynnextras.event.KeyInputEvent;
 import julianh06.wynnextras.event.TickEvent;
 import julianh06.wynnextras.event.WorldChangeEvent;
+import julianh06.wynnextras.features.ability.AbilityCooldownHud;
 import julianh06.wynnextras.features.ability.AbilityCooldownOverlay;
 import julianh06.wynnextras.features.abilitytree.TreeLoader;
 import julianh06.wynnextras.features.aspects.maintracking;
@@ -143,7 +144,8 @@ public class WynnExtras implements ClientModInitializer {
 
 		PlayerHider.registerBossPlayerHider();
 		BankOverlay.registerBankOverlay();
-		AbilityCooldownOverlay.register();
+		//AbilityCooldownOverlay.register();
+		AbilityCooldownHud.register();
 		//HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.MISC_OVERLAYS, AbilityCooldownOverlay.ABILITYCOOLDOWN_LAYER, AbilityCooldownOverlay::render));
 		PV.register();
 		GV.register();
