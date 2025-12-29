@@ -2,9 +2,12 @@ package julianh06.wynnextras.features.ability;
 
 import com.wynntils.core.components.Models;
 import com.wynntils.models.statuseffects.type.StatusEffect;
+import com.wynntils.utils.colors.CustomColor;
+import com.wynntils.utils.wynn.ColorScaleUtils;
 import julianh06.wynnextras.core.WynnExtras;
 import julianh06.wynnextras.core.loader.WEHudElement;
 import julianh06.wynnextras.event.TickEvent;
+import julianh06.wynnextras.utils.HUD.HUDUtils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.MinecraftClient;
@@ -12,6 +15,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 
@@ -33,10 +37,11 @@ public class AbilityCooldownOverlay  implements WEHudElement {
     private int currentTick = 0;
 
     private static Identifier tempIdentifier = Identifier.of("wynnextras", "textures/general/hud/abilities/holytrumpets.png");
-
+    private static HUDUtils hudUtils;
 
     public static void register(){
         WynnExtras.LOGGER.info("Ability CooldownOverlay registerd");
+        hudUtils = new HUDUtils();
 
         ClientTickEvents.START_CLIENT_TICK.register((tick) -> {
 
@@ -56,6 +61,7 @@ public class AbilityCooldownOverlay  implements WEHudElement {
 
 
     private void recalculateRenderCache() {
+
         List<StatusEffect> effects = Models.StatusEffect.getStatusEffects();
 
         //Using this isActive for better display if it should lag
@@ -113,22 +119,30 @@ public class AbilityCooldownOverlay  implements WEHudElement {
     }
 
     public void render(DrawContext context, RenderTickCounter tickCounter) {
+        hudUtils.computeScaleAndOffsets();
+        int startX = hudUtils.getLogicalWidth() / 2 - 735;
+        int startY = hudUtils.getLogicalHeight() / 2 -  250;
+
+
+
+        //WynnExtras.LOGGER.info("Hud width:" + hudUtils.getLogicalWidth() / 2 + " Hud height: " + hudUtils.getLogicalHeight() / 2);
         if (renderCache.isEmpty()){
             return;
         }
         int currentx = 0;
         for(AbilityCooldown abilityCooldown : renderCache){
             int cooldownDrawState =  24;
-
-            context.drawTexture(RenderLayer::getGuiTextured, abilityCooldown.getIdentifier(), 225 + currentx, 290, 0 , 0 , 24, 24, 24, 24);
+            //225, 290
+            context.drawTexture(RenderLayer::getGuiTextured, abilityCooldown.getIdentifier(), startX + currentx, startY, 0 , 0 , 24, 24, 24, 24);
             if (abilityCooldown.getCurrentDuration() > 0){
                 float test1 =  (float) abilityCooldown.getTotalDuration() /abilityCooldown.getCurrentDuration();
                 float test2 = 24 / test1;
 
                 cooldownDrawState = Math.round((float) 24 / ((float) abilityCooldown.totalDuration / abilityCooldown.currentDuration));
                 //WynnExtras.LOGGER.info("Test1: " + test1 +  " Test2: " +test2 + "Final: " + Math.round(test2));
-                context.drawTexture(RenderLayer::getGuiTextured, COOLDOWN_IDENTIFIER, 225 + currentx, 290 , 24, 0, 24, cooldownDrawState ,24, cooldownDrawState, 24, cooldownDrawState);
+                context.drawTexture(RenderLayer::getGuiTextured, COOLDOWN_IDENTIFIER, startX + currentx, startY , 24, 0, 24, cooldownDrawState ,24, cooldownDrawState, 24, cooldownDrawState);
             }
+            context.drawText(MinecraftClient.getInstance().textRenderer, Text.literal(String.valueOf(abilityCooldown.currentDuration + 1)), startX + 10 + currentx,startY + 8, CustomColor.fromHexString("FFFFFF").asInt(), false);
             currentx += 25;
         }
 
