@@ -11,7 +11,6 @@ import julianh06.wynnextras.event.KeyInputEvent;
 import julianh06.wynnextras.event.TickEvent;
 import julianh06.wynnextras.event.WorldChangeEvent;
 import julianh06.wynnextras.features.ability.AbilityCooldownHud;
-import julianh06.wynnextras.features.ability.AbilityCooldownOverlay;
 import julianh06.wynnextras.features.abilitytree.TreeLoader;
 import julianh06.wynnextras.features.aspects.maintracking;
 import julianh06.wynnextras.features.chat.RaidChatNotifier;
@@ -34,8 +33,6 @@ import julianh06.wynnextras.mixin.Accessor.KeybindingAccessor;
 import julianh06.wynnextras.utils.MinecraftUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -217,6 +214,7 @@ public class WynnExtras implements ClientModInitializer {
 			}
 		}
 
+
 //		try {
 //			if(McUtils.containerMenu() != null) {
 //				ItemStack rightArrow = McUtils.containerMenu().getSlot(52).getStack();
@@ -249,6 +247,7 @@ public class WynnExtras implements ClientModInitializer {
 		if (ticksUntilNotify == 0) {
 			tryNotifyVersionUpdate(CurrentVersionData.INSTANCE.version, latestVersion);
 		}
+		if(event)
 	}
 
 	private static Instant lastNotificationTime = null;

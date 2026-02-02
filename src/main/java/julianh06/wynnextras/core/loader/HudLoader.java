@@ -2,10 +2,7 @@ package julianh06.wynnextras.core.loader;
 
 import julianh06.wynnextras.core.WynnExtras;
 import julianh06.wynnextras.event.api.WEEventBus;
-import julianh06.wynnextras.features.ability.AbilityCooldownOverlay;
-import julianh06.wynnextras.utils.HUD.WEHud;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import org.reflections.Reflections;
 
 import java.util.Set;

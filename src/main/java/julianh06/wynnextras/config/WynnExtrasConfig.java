@@ -39,6 +39,7 @@ public class WynnExtrasConfig implements ConfigData {
         String bankOverlay = "Bank Overlay";
         String chat = "Chat";
         String raid = "Raid";
+        String abilityCooldown = "Ability Cooldown";
         String misc = "Misc";
     }
 
@@ -331,6 +332,33 @@ public class WynnExtrasConfig implements ConfigData {
     @ConfigEntry.Excluded
     public Map<String, Long> raidPBs = new HashMap<>();
 
+
+    //Ability Cooldown
+    @ConfigEntry.Category(Categories.abilityCooldown)
+    @ConfigEntry.Name("Enable Ability Cooldown Hud")
+    public boolean abilitycooldown = false;
+
+
+    @ConfigEntry.Category(Categories.abilityCooldown)
+    @ConfigEntry.Name("Only display cooldown bigger then ... seconds. (0 to show all)")
+    public int minAbilityTotalDuration = 0;
+
+    @ConfigEntry.Category(Categories.abilityCooldown)
+    @ConfigEntry.Text()
+    public String emptyyyyy = " ";
+
+
+    @ConfigEntry.Category(Categories.abilityCooldown)
+    @ConfigEntry.Name("Ability Hud X")
+    public int abilityHudX = 735;
+
+    @ConfigEntry.Category(Categories.abilityCooldown)
+    @ConfigEntry.Name("Ability Hud Y")
+    public int abilityHudY = 250;
+
+    @ConfigEntry.Category(Categories.abilityCooldown)
+    @ConfigEntry.Name("Ability Hud Scale")
+    public  float abilityHudScale = 1.0F;
 
 //    //Hider
 //    public boolean partyMemberHide = true;
