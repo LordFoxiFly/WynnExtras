@@ -14,6 +14,7 @@ import julianh06.wynnextras.core.WELogger;
 import julianh06.wynnextras.core.WynnExtras;
 import julianh06.wynnextras.event.ServerTickEvent;
 import julianh06.wynnextras.event.TickEvent;
+import julianh06.wynnextras.event.WorldChangeEvent;
 import julianh06.wynnextras.utils.HUD.WEHud;
 import julianh06.wynnextras.utils.UI.UIUtils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -43,26 +44,19 @@ public class AbilityCooldownHud extends WEHud {
     private static final Identifier COOLDOWN_IDENTIFIER = Identifier.of("wynnextras",  "textures/general/hud/abilities/cooldown.png");
 
     private static List<AbilityCooldown> renderCache = new ArrayList<>();
-    private int currentTick = 0;
-
-    private static Identifier tempIdentifier = Identifier.of("wynnextras", "textures/general/hud/abilities/holytrumpets.png");
-
     @Unique
     private static WynnExtrasConfig config;
 
     public static void register(){
         WynnExtras.LOGGER.info("Ability CooldownHUD registerd");
         if (config == null) config = SimpleConfig.getInstance(WynnExtrasConfig.class);
-
-        ClientTickEvents.START_CLIENT_TICK.register((tick) -> {
-
-        });
     }
 
 
     public AbilityCooldownHud() {
         super(IdentifiedLayer.MISC_OVERLAYS, Identifier.of("wynnextras", "ability-cooldown-hud"));
     }
+
 //    Legacy code that did not calculate in the ServerTPS
 //    @SubscribeEvent
 //    public void onTick(TickEvent event) {
@@ -123,9 +117,6 @@ public class AbilityCooldownHud extends WEHud {
             }
             effectCooldown.updateTime();
             effectCooldown.setActive(true);
-            //renderCache.add(effectIdentifier);
-
-
         }
         renderCache.removeIf(abilityCooldown -> !abilityCooldown.isActive());
     }
@@ -146,31 +137,30 @@ public class AbilityCooldownHud extends WEHud {
 
         int startX = getLogicalWidth() / 2 - config.abilityHudX;
         int startY = getLogicalHeight() / 2 - config.abilityHudY;
+        int currentx = 0;
+        int textureScaled  = Math.round(24 * config.abilityHudScale);
 
 
-        //WynnExtras.LOGGER.info("Hud width:" + hudUtils.getLogicalWidth() / 2 + " Hud height: " + hudUtils.getLogicalHeight() / 2);
         if (renderCache.isEmpty()){
             return;
         }
+
         this.drawContext = context;
         computeScaleAndOffsets();
         if (ui == null) ui = new UIUtils(context, scaleFactor, xStart, yStart);
         else ui.updateContext(context, scaleFactor, xStart, yStart);
-        int currentx = 0;
+
         for(AbilityCooldown abilityCooldown : renderCache){
-            int cooldownDrawState =  24;
-            //225, 290
-            context.drawTexture(RenderLayer::getGuiTextured, abilityCooldown.getIdentifier(), startX + currentx, startY, 0 , 0 , 24, 24, 24, 24);
+            int distanceX =Math.round(currentx * config.abilityHudScale);
+            WynnExtras.LOGGER.info(distanceX + "Distance" + "Float: " + config.abilityHudScale);
+            int cooldownDrawState =  textureScaled;
+            context.drawTexture(RenderLayer::getGuiTextured, abilityCooldown.getIdentifier(), startX + distanceX, startY, 0 , 0 , textureScaled, textureScaled, textureScaled, textureScaled);
 
+            //Draws the Cooldown animation
             if (abilityCooldown.getCurrentDuration() > 0){
-                float test1 =  (float) abilityCooldown.getTotalDuration() /abilityCooldown.getCurrentDuration();
-                float test2 = 24 / test1;
-
-                cooldownDrawState = Math.round((float) 24 / ((float) abilityCooldown.totalDuration / abilityCooldown.currentDuration));
-                //WynnExtras.LOGGER.info("Test1: " + test1 +  " Test2: " +test2 + "Final: " + Math.round(test2));
-                context.drawTexture(RenderLayer::getGuiTextured, COOLDOWN_IDENTIFIER, startX + currentx, startY , 24, 0, 24, cooldownDrawState ,24, cooldownDrawState, 24, cooldownDrawState);
+                cooldownDrawState = Math.round((float) textureScaled / ((float) abilityCooldown.totalDuration / abilityCooldown.currentDuration));
+                context.drawTexture(RenderLayer::getGuiTextured, COOLDOWN_IDENTIFIER, startX + distanceX, startY , textureScaled, 0, textureScaled, cooldownDrawState ,textureScaled, cooldownDrawState, textureScaled, cooldownDrawState);
             }
-            //context.drawText(MinecraftClient.getInstance().textRenderer, Text.literal(String.valueOf(abilityCooldown.currentDuration + 1)), startX + 10 + currentx,startY + 8, CustomColor.fromHexString("FFFFFF").asInt(), false);
 
             //This line could be used for drawing the duration as a Text.
             //this.drawText(String.valueOf(abilityCooldown.currentDuration + 1), startX + 10 + currentx, startY + 8,CustomColor.fromHexString("FFFFFF") ,(float)scaleFactor);
@@ -178,12 +168,16 @@ public class AbilityCooldownHud extends WEHud {
         }
 
     }
+
+    /**
+     * Returns the Identefiere of a StatusEffect
+     * @param effect
+     * @return
+     */
     public static Identifier getAbilitiyCooldownIdentifier(StatusEffect effect){
         Pattern p = Pattern.compile("§7", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(effect.getName().getString());
         String result = m.replaceAll("");
-        //WynnExtras.LOGGER.info("textures/general/hud/abilities/"+result.replaceAll(" ", "").toLowerCase() + ".png" + " : Prefix: " + effect.getPrefix().getString() + " : Duration: " + effect.getDuration() + " : DisplayeTime :" + effect.getDisplayedTime().getString());
-        //if (!Identifier.isPathValid("textures/general/hud/abilities/" + result.replaceAll(" ", "").toLowerCase() + ".png")) return  null;
         return  Identifier.of("wynnextras", "textures/general/hud/abilities/" +result.replaceAll(" ", "").toLowerCase() + ".png");
     }
 
