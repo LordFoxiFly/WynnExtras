@@ -247,7 +247,6 @@ public class WynnExtras implements ClientModInitializer {
 		if (ticksUntilNotify == 0) {
 			tryNotifyVersionUpdate(CurrentVersionData.INSTANCE.version, latestVersion);
 		}
-		if(event)
 	}
 
 	private static Instant lastNotificationTime = null;

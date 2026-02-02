@@ -12,6 +12,7 @@ import julianh06.wynnextras.config.WynnExtrasConfig;
 import julianh06.wynnextras.config.simpleconfig.SimpleConfig;
 import julianh06.wynnextras.core.WELogger;
 import julianh06.wynnextras.core.WynnExtras;
+import julianh06.wynnextras.event.ServerTickEvent;
 import julianh06.wynnextras.event.TickEvent;
 import julianh06.wynnextras.utils.HUD.WEHud;
 import julianh06.wynnextras.utils.UI.UIUtils;
@@ -62,16 +63,27 @@ public class AbilityCooldownHud extends WEHud {
     public AbilityCooldownHud() {
         super(IdentifiedLayer.MISC_OVERLAYS, Identifier.of("wynnextras", "ability-cooldown-hud"));
     }
-
+//    Legacy code that did not calculate in the ServerTPS
+//    @SubscribeEvent
+//    public void onTick(TickEvent event) {
+//        //This entire code could be a bit more optimized if done with StatusEffectChangedEvent from Wynntils.
+//        //But when ability is on cooldown we update the icon every 1s anyway and the code that gets executed is not that heavy, that it would probaly make an impact if you are not playing on early 2000s Hardware.
+//        if (!config.abilitycooldown) return;
+//        if (event.ticks % 20 == 0) {
+//
+//            recalculateRenderCache();
+//        }
+//    }
     @SubscribeEvent
-    public void onTick(TickEvent event) {
+    public void onServerTick(ServerTickEvent event){
         //This entire code could be a bit more optimized if done with StatusEffectChangedEvent from Wynntils.
         //But when ability is on cooldown we update the icon every 1s anyway and the code that gets executed is not that heavy, that it would probaly make an impact if you are not playing on early 2000s Hardware.
         if (!config.abilitycooldown) return;
         if (event.ticks % 20 == 0) {
-
+            WynnExtras.LOGGER.info(event.ticks / 20  + ": CurrentServerTick secs");
             recalculateRenderCache();
         }
+
     }
 
     private void recalculateRenderCache() {
@@ -159,7 +171,9 @@ public class AbilityCooldownHud extends WEHud {
                 context.drawTexture(RenderLayer::getGuiTextured, COOLDOWN_IDENTIFIER, startX + currentx, startY , 24, 0, 24, cooldownDrawState ,24, cooldownDrawState, 24, cooldownDrawState);
             }
             //context.drawText(MinecraftClient.getInstance().textRenderer, Text.literal(String.valueOf(abilityCooldown.currentDuration + 1)), startX + 10 + currentx,startY + 8, CustomColor.fromHexString("FFFFFF").asInt(), false);
-            this.drawText(String.valueOf(abilityCooldown.currentDuration + 1), startX + 10 + currentx, startY + 8,CustomColor.fromHexString("FFFFFF") ,(float)scaleFactor);
+
+            //This line could be used for drawing the duration as a Text.
+            //this.drawText(String.valueOf(abilityCooldown.currentDuration + 1), startX + 10 + currentx, startY + 8,CustomColor.fromHexString("FFFFFF") ,(float)scaleFactor);
             currentx += 25;
         }
 
